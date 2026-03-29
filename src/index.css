@@ -1,0 +1,103 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-inter: 'Inter', sans-serif;
+    /* Light gray-blue background like the app */
+    --background: 220 20% 97%;
+    --foreground: 220 25% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 25% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 25% 10%;
+    /* Vibrant blue primary like the image cards */
+    --primary: 217 90% 58%;
+    --primary-foreground: 0 0% 100%;
+    /* Light blue-gray secondary */
+    --secondary: 220 15% 94%;
+    --secondary-foreground: 220 20% 20%;
+    --muted: 220 12% 93%;
+    --muted-foreground: 220 10% 46%;
+    /* Pink-magenta accent from the header gradient */
+    --accent: 330 85% 60%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 15% 90%;
+    --input: 220 15% 90%;
+    --ring: 217 90% 58%;
+    --chart-1: 217 90% 58%;
+    --chart-2: 330 85% 60%;
+    --chart-3: 145 60% 45%;
+    --chart-4: 40 90% 55%;
+    --chart-5: 270 60% 55%;
+    --radius: 1rem;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 217 90% 58%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 220 15% 94%;
+    --sidebar-accent-foreground: 220 20% 20%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217 90% 58%;
+  }
+
+  .dark {
+    --background: 220 20% 7%;
+    --foreground: 220 10% 95%;
+    --card: 220 15% 11%;
+    --card-foreground: 220 10% 95%;
+    --popover: 220 15% 11%;
+    --popover-foreground: 220 10% 95%;
+    --primary: 217 85% 62%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 12% 16%;
+    --secondary-foreground: 220 10% 90%;
+    --muted: 220 12% 16%;
+    --muted-foreground: 220 8% 55%;
+    --accent: 330 75% 55%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 62% 35%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 12% 18%;
+    --input: 220 12% 18%;
+    --ring: 217 85% 62%;
+    --chart-1: 217 85% 62%;
+    --chart-2: 330 75% 55%;
+    --chart-3: 145 50% 40%;
+    --chart-4: 40 80% 50%;
+    --chart-5: 270 50% 50%;
+    --sidebar-background: 220 20% 7%;
+    --sidebar-foreground: 220 10% 95%;
+    --sidebar-primary: 217 85% 62%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 12% 16%;
+    --sidebar-accent-foreground: 220 10% 95%;
+    --sidebar-border: 220 12% 18%;
+    --sidebar-ring: 217 85% 62%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-inter;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+html {
+  overscroll-behavior-y: contain;
+}
