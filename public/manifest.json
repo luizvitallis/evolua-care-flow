@@ -4,21 +4,33 @@
   "description": "Sistema de evolução clínica para médicos e enfermeiros",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f5faf8",
-  "theme_color": "#0d9488",
+  "background_color": "#ffffff",
+  "theme_color": "#0984e3",
   "orientation": "any",
   "icons": [
     {
-      "src": "https://media.base44.com/images/public/69c449b402b70173b105d075/00f2ac22e_generated_image.png",
+      "src": "/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "https://media.base44.com/images/public/69c449b402b70173b105d075/00f2ac22e_generated_image.png",
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
