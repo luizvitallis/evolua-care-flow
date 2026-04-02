@@ -5,8 +5,9 @@ import { useState } from "react";
 import ParameterInput, { hasParameter } from "./ParameterInput";
 import LesaoPressaoInput from "./LesaoPressaoInput";
 import DispositivoInput, { isDispositivoOption } from "./DispositivoInput";
+import { adaptGender } from "../lib/genderUtils";
 
-export default function CheckboxGroup({ titulo, opcoes, selected, onToggle, paramValues, onParamChange }) {
+export default function CheckboxGroup({ titulo, opcoes, selected, onToggle, paramValues, onParamChange, sexo }) {
   const [expanded, setExpanded] = useState(true);
   const count = selected.length;
 
@@ -48,7 +49,7 @@ export default function CheckboxGroup({ titulo, opcoes, selected, onToggle, para
               {opcoes.map((opcao, idx) => {
                 const isSelected = selected.includes(opcao);
                 const hasParam = hasParameter(opcao);
-                const displayLabel = opcao.replace(/___\/4\+/g, "+/4+").replace(/___/g, "•••");
+                const displayLabel = adaptGender(opcao.replace(/___\/4\+/g, "+/4+").replace(/___/g, "•••"), sexo);
                 return (
                   <label
                     key={idx}

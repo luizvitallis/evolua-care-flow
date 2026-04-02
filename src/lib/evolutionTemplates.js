@@ -4,6 +4,7 @@ import enfermeiroAtencaoPrimaria from "./templates/enfermeiroAtencaoPrimaria";
 import enfermeiroHospitalar from "./templates/enfermeiroHospitalar";
 import { formatLesaoPressao } from "../components/LesaoPressaoInput";
 import { isDispositivoOption, formatDispositivo } from "../components/DispositivoInput";
+import { adaptGender } from "./genderUtils";
 
 function formatCruzVal(val) {
   const n = parseInt(val);
@@ -114,7 +115,8 @@ export function generateEvolutionText(perfil, template, selections, freeText, pa
     lines.push(freeText.trim());
   }
 
-  return lines.join("\n");
+  const text = lines.join("\n");
+  return adaptGender(text, patientInfo?.sexo);
 }
 
 export default templates;

@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { User } from "lucide-react";
 
 export default function PatientInfoForm({ patientInfo, onChange, ambiente }) {
+  const sexo = patientInfo.sexo || "";
   const showAdmissao = ambiente === "ambiente_hospitalar";
   const diasInternacao = useMemo(() => {
     if (!patientInfo.dataAdmissao) return null;
@@ -36,6 +37,34 @@ export default function PatientInfoForm({ patientInfo, onChange, ambiente }) {
       </h3>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="sm:col-span-2 space-y-1.5">
+          <Label className="text-xs text-muted-foreground">Sexo</Label>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => handleChange("sexo", "masculino")}
+              className={`flex-1 h-11 rounded-xl text-sm font-medium transition-all duration-150 border ${
+                sexo === "masculino"
+                  ? "bg-primary/10 border-primary/25 text-foreground"
+                  : "bg-background border-border/60 text-muted-foreground hover:bg-muted/60"
+              }`}
+            >
+              Masculino
+            </button>
+            <button
+              type="button"
+              onClick={() => handleChange("sexo", "feminino")}
+              className={`flex-1 h-11 rounded-xl text-sm font-medium transition-all duration-150 border ${
+                sexo === "feminino"
+                  ? "bg-primary/10 border-primary/25 text-foreground"
+                  : "bg-background border-border/60 text-muted-foreground hover:bg-muted/60"
+              }`}
+            >
+              Feminino
+            </button>
+          </div>
+        </div>
+
         <div className="sm:col-span-2 space-y-1.5">
           <Label htmlFor="nome" className="text-xs text-muted-foreground">Nome do Paciente</Label>
           <Input

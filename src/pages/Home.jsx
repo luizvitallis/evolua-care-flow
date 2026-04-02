@@ -37,7 +37,7 @@ export default function Home() {
   const [freeText, setFreeText] = useState("");
   const [generatedText, setGeneratedText] = useState("");
   const [uppercase, setUppercase] = useState(false);
-  const [patientInfo, setPatientInfo] = useState({ nome: "", idade: "", dataAdmissao: "", diagnostico: "" });
+  const [patientInfo, setPatientInfo] = useState({ nome: "", idade: "", dataAdmissao: "", diagnostico: "", sexo: "" });
   const [paramValues, setParamValues] = useState({});
   const [vmData, setVmData] = useState({ modo: null, params: {}, enabled: false });
 
@@ -73,7 +73,7 @@ export default function Home() {
     setSelections({});
     setFreeText("");
     setGeneratedText("");
-    setPatientInfo({ nome: "", idade: "", dataAdmissao: "", diagnostico: "" });
+    setPatientInfo({ nome: "", idade: "", dataAdmissao: "", diagnostico: "", sexo: "" });
     setParamValues({});
     setVmData({ modo: null, params: {}, enabled: false });
   };
@@ -288,6 +288,7 @@ export default function Home() {
                     titulo={grupo.titulo}
                     opcoes={grupo.opcoes}
                     selected={selections[grupo.campo] || []}
+                    sexo={patientInfo.sexo}
                     onToggle={(opcao) => {
                       toggleOption(grupo.campo, opcao);
                       // If unchecking VM, clear VM data
