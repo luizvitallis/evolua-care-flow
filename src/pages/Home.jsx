@@ -289,6 +289,7 @@ export default function Home() {
                     opcoes={grupo.opcoes}
                     selected={selections[grupo.campo] || []}
                     sexo={patientInfo.sexo}
+                    campo={grupo.campo}
                     onToggle={(opcao) => {
                       toggleOption(grupo.campo, opcao);
                       // If unchecking VM, clear VM data

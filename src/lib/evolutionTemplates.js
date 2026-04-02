@@ -3,7 +3,8 @@ import medicoHospitalar from "./templates/medicoHospitalar";
 import enfermeiroAtencaoPrimaria from "./templates/enfermeiroAtencaoPrimaria";
 import enfermeiroHospitalar from "./templates/enfermeiroHospitalar";
 import { formatLesaoPressao } from "../components/LesaoPressaoInput";
-import { isDispositivoOption, formatDispositivo } from "../components/DispositivoInput";
+import { isDispositivoOption, formatDispositivo, isDispositivoWithDate } from "../components/DispositivoInput";
+import { formatMedicacoes } from "../components/MedicacaoInput";
 import { adaptGender } from "./genderUtils";
 
 function formatCruzVal(val) {
@@ -51,13 +52,62 @@ export function generateEvolutionText(perfil, template, selections, freeText, pa
 
   for (const grupo of template.grupos) {
     const selected = selections[grupo.campo] || [];
-    if (selected.length > 0) {
+
+    // Special handling for medications section
+    if (grupo.campo === "medicacoes") {
+      const medLines = formatMedicacoes(paramValues);
+      if (selected.length > 0 || medLines.length > 0) {
+        lines.push(`${grupo.titulo.toUpperCase()}:`);
+        const allMedLines = [];
+        // Format selected predefined meds (non-Antibiótico)
+        for (const item of selected) {
+          if (item === "Antibiótico") continue;
+          const val = paramValues?.[item];
+          let text = item;
+          if (val?.via) text += ` — ${val.via}`;
+          if (val?.vazao) text += `, ${val.vazao} ml/h`;
+          allMedLines.push(text);
+        }
+        // Antibiotics
+        if (selected.includes("Antibiótico")) {
+          const abVal = paramValues?.["Antibiótico"];
+          if (abVal?.items?.length > 0) {
+            for (const ab of abVal.items) {
+              let text = `Antibiótico: ${ab.nome}`;
+              if (ab.via) text += ` — ${ab.via}`;
+              if (ab.vazao) text += `, ${ab.vazao} ml/h`;
+              allMedLines.push(text);
+            }
+          } else {
+            allMedLines.push("Antibiótico");
+          }
+        }
+        // Custom meds
+        const custom = paramValues?.["__custom_medicacoes"];
+        if (custom?.length > 0) {
+          for (const c of custom) {
+            if (!c.nome) continue;
+            let text = c.nome;
+            if (c.via) text += ` — ${c.via}`;
+            if (c.vazao) text += `, ${c.vazao} ml/h`;
+            allMedLines.push(text);
+          }
+        }
+        if (allMedLines.length > 0) {
+          lines.push(allMedLines.join(". ") + ".");
+        }
+      }
+    } else if (selected.length > 0) {
       lines.push(`${grupo.titulo.toUpperCase()}:`);
       const filledItems = selected.map((item) => {
         if (item === "Presença de lesão por pressão" && paramValues && paramValues[item]) {
           return formatLesaoPressao(paramValues[item]);
         }
         if (isDispositivoOption(item) && paramValues && paramValues[item]) {
+          return formatDispositivo(item, paramValues[item]);
+        }
+        // Dispositivos with date only (no location config)
+        if (isDispositivoWithDate(item, grupo.campo) && !isDispositivoOption(item) && paramValues && paramValues[item]) {
           return formatDispositivo(item, paramValues[item]);
         }
         if (item.includes("___") && paramValues && paramValues[item] !== undefined) {

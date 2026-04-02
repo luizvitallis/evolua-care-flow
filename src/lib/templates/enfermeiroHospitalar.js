@@ -45,6 +45,22 @@ const enfermeiroHospitalar = [
         ],
       },
       {
+        titulo: "Medicações em Uso",
+        campo: "medicacoes",
+        opcoes: [
+          "Dormonid",
+          "Fentanil",
+          "Propofol",
+          "Ketamina",
+          "Dopamina",
+          "Dobutamina",
+          "Precedex",
+          "Morfina",
+          "Cisatracurio",
+          "Antibiótico",
+        ],
+      },
+      {
         titulo: "Respiratório",
         campo: "respiratorio",
         opcoes: [
@@ -249,6 +265,22 @@ const enfermeiroHospitalar = [
           "Sem déficit motor",
           "Com déficit motor",
           "Contenção mecânica em uso",
+        ],
+      },
+      {
+        titulo: "Medicações em Uso",
+        campo: "medicacoes",
+        opcoes: [
+          "Dormonid",
+          "Fentanil",
+          "Propofol",
+          "Ketamina",
+          "Dopamina",
+          "Dobutamina",
+          "Precedex",
+          "Morfina",
+          "Cisatracurio",
+          "Antibiótico",
         ],
       },
       {
@@ -505,6 +537,22 @@ const enfermeiroHospitalar = [
           "Agitação psicomotora",
           "Delirium (CAM-ICU positivo)",
           "Contenção mecânica em uso",
+        ],
+      },
+      {
+        titulo: "Medicações em Uso",
+        campo: "medicacoes",
+        opcoes: [
+          "Dormonid",
+          "Fentanil",
+          "Propofol",
+          "Ketamina",
+          "Dopamina",
+          "Dobutamina",
+          "Precedex",
+          "Morfina",
+          "Cisatracurio",
+          "Antibiótico",
         ],
       },
       {

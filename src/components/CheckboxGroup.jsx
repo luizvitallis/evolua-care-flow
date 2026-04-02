@@ -4,12 +4,14 @@ import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import ParameterInput, { hasParameter } from "./ParameterInput";
 import LesaoPressaoInput from "./LesaoPressaoInput";
-import DispositivoInput, { isDispositivoOption } from "./DispositivoInput";
+import DispositivoInput, { isDispositivoOption, isDispositivoWithDate, DispositivoDateInput } from "./DispositivoInput";
+import MedicacaoInput, { isMedicacaoSection, MedicacaoCustomArea } from "./MedicacaoInput";
 import { adaptGender } from "../lib/genderUtils";
 
-export default function CheckboxGroup({ titulo, opcoes, selected, onToggle, paramValues, onParamChange, sexo }) {
+export default function CheckboxGroup({ titulo, opcoes, selected, onToggle, paramValues, onParamChange, sexo, campo }) {
   const [expanded, setExpanded] = useState(true);
   const count = selected.length;
+  const isMedicacao = isMedicacaoSection(campo);
 
   return (
     <div className="rounded-2xl bg-card shadow-sm shadow-black/5 border border-border/50 overflow-hidden">
@@ -50,6 +52,8 @@ export default function CheckboxGroup({ titulo, opcoes, selected, onToggle, para
                 const isSelected = selected.includes(opcao);
                 const hasParam = hasParameter(opcao);
                 const displayLabel = adaptGender(opcao.replace(/___\/4\+/g, "+/4+").replace(/___/g, "•••"), sexo);
+                const showDispositivoFull = isSelected && isDispositivoOption(opcao);
+                const showDispositivoDate = isSelected && !isDispositivoOption(opcao) && isDispositivoWithDate(opcao, campo);
                 return (
                   <label
                     key={idx}
@@ -69,7 +73,7 @@ export default function CheckboxGroup({ titulo, opcoes, selected, onToggle, para
                         {displayLabel}
                       </span>
                     </div>
-                    {isSelected && hasParam && (
+                    {isSelected && hasParam && !isMedicacao && (
                       <div className="ml-7">
                         <ParameterInput
                           opcao={opcao}
@@ -86,7 +90,7 @@ export default function CheckboxGroup({ titulo, opcoes, selected, onToggle, para
                         />
                       </div>
                     )}
-                    {isSelected && isDispositivoOption(opcao) && (
+                    {showDispositivoFull && (
                       <div className="ml-7">
                         <DispositivoInput
                           opcao={opcao}
@@ -95,10 +99,37 @@ export default function CheckboxGroup({ titulo, opcoes, selected, onToggle, para
                         />
                       </div>
                     )}
+                    {showDispositivoDate && (
+                      <div className="ml-7">
+                        <DispositivoDateInput
+                          value={paramValues?.[opcao]}
+                          onChange={(val) => onParamChange?.(opcao, val)}
+                        />
+                      </div>
+                    )}
+                    {isSelected && isMedicacao && (
+                      <div className="ml-7">
+                        <MedicacaoInput
+                          opcao={opcao}
+                          value={paramValues?.[opcao]}
+                          onChange={(val) => onParamChange?.(opcao, val)}
+                          paramValues={paramValues}
+                          onParamChange={onParamChange}
+                        />
+                      </div>
+                    )}
                   </label>
                 );
               })}
             </div>
+            {isMedicacao && (
+              <div className="px-4 pb-4">
+                <MedicacaoCustomArea
+                  paramValues={paramValues}
+                  onParamChange={onParamChange}
+                />
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
