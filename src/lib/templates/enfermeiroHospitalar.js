@@ -193,6 +193,7 @@ const enfermeiroHospitalar = [
           "Diurese presente por SVD e normal",
           "Diurese presente por SVD e concentrada",
           "Diurese presente por SVD e colúria",
+          "Diurese presente por SVD e hematúrica",
           "Anúrico",
           "Evacuações presentes e normais",
           "Evacuações diarreicas",
