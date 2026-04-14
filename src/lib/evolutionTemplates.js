@@ -5,6 +5,7 @@ import enfermeiroHospitalar from "./templates/enfermeiroHospitalar";
 import { formatLesaoPressao } from "../components/LesaoPressaoInput";
 import { isDispositivoOption, formatDispositivo, isDispositivoWithDate } from "../components/DispositivoInput";
 import { formatMedicacoes } from "../components/MedicacaoInput";
+import { hasVariant, fillVariant } from "./variantUtils";
 import { adaptGender } from "./genderUtils";
 
 function formatCruzVal(val) {
@@ -110,29 +111,43 @@ export function generateEvolutionText(perfil, template, selections, freeText, pa
         if (isDispositivoWithDate(item, grupo.campo) && !isDispositivoOption(item) && paramValues && paramValues[item]) {
           return formatDispositivo(item, paramValues[item]);
         }
-        if (item.includes("___") && paramValues && paramValues[item] !== undefined) {
-          const vals = paramValues[item];
-          if (typeof vals === "object" && vals !== null) {
-            let result = item;
-            const indices = Object.keys(vals).map(Number).sort((a, b) => b - a);
-            for (const idx of indices) {
-              let pos = -1;
-              let searchFrom = 0;
-              for (let j = 0; j <= idx; j++) {
-                pos = result.indexOf("___", searchFrom);
-                searchFrom = pos + 3;
-              }
-              if (pos >= 0) {
-                const isCruz = result.slice(pos + 3).startsWith("/4+");
-                const fillVal = isCruz ? formatCruzVal(vals[idx]) : String(vals[idx]);
-                result = result.slice(0, pos) + fillVal + result.slice(pos + 3);
-              }
-            }
-            return result;
-          }
-          return item.replace(/___/g, String(vals));
+
+        const pv = paramValues?.[item];
+        const isVariantItem = hasVariant(item);
+        let processed = item;
+        if (isVariantItem) {
+          processed = fillVariant(item, pv?.v ?? 0);
         }
-        return item;
+
+        if (processed.includes("___")) {
+          const vals = isVariantItem ? pv?.p : pv;
+          if (vals !== undefined && vals !== null) {
+            if (typeof vals === "object") {
+              let result = processed;
+              const indices = Object.keys(vals)
+                .map(Number)
+                .filter((n) => !isNaN(n))
+                .sort((a, b) => b - a);
+              for (const idx of indices) {
+                let pos = -1;
+                let searchFrom = 0;
+                for (let j = 0; j <= idx; j++) {
+                  pos = result.indexOf("___", searchFrom);
+                  searchFrom = pos + 3;
+                }
+                if (pos >= 0) {
+                  const isCruz = result.slice(pos + 3).startsWith("/4+");
+                  const fillVal = isCruz ? formatCruzVal(vals[idx]) : String(vals[idx]);
+                  result = result.slice(0, pos) + fillVal + result.slice(pos + 3);
+                }
+              }
+              return result;
+            }
+            return processed.replace(/___/g, String(vals));
+          }
+        }
+
+        return processed;
       });
       lines.push(filledItems.join(". ") + ".");
     }

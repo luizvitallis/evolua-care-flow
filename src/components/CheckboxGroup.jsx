@@ -6,6 +6,8 @@ import ParameterInput, { hasParameter } from "./ParameterInput";
 import LesaoPressaoInput from "./LesaoPressaoInput";
 import DispositivoInput, { isDispositivoOption, isDispositivoWithDate, DispositivoDateInput } from "./DispositivoInput";
 import MedicacaoInput, { isMedicacaoSection, MedicacaoCustomArea } from "./MedicacaoInput";
+import VariantInput from "./VariantInput";
+import { hasVariant, fillVariant } from "../lib/variantUtils";
 import { adaptGender } from "../lib/genderUtils";
 
 export default function CheckboxGroup({ titulo, opcoes, selected, onToggle, paramValues, onParamChange, sexo, campo }) {
@@ -50,10 +52,34 @@ export default function CheckboxGroup({ titulo, opcoes, selected, onToggle, para
             <div className="px-4 pb-4 grid grid-cols-1 md:grid-cols-2 gap-1.5">
               {opcoes.map((opcao, idx) => {
                 const isSelected = selected.includes(opcao);
-                const hasParam = hasParameter(opcao);
-                const displayLabel = adaptGender(opcao.replace(/___\/4\+/g, "+/4+").replace(/___/g, "•••"), sexo);
+                const isVariant = hasVariant(opcao);
+                const rawParamVal = paramValues?.[opcao];
+                const variantIdx = isVariant ? (rawParamVal?.v ?? 0) : null;
+                const effectiveOption = isVariant ? fillVariant(opcao, variantIdx) : opcao;
+                const numParamVal = isVariant ? rawParamVal?.p : rawParamVal;
+                const hasParam = hasParameter(effectiveOption);
+                const displaySource = isVariant
+                  ? opcao.replace(/\{[^{}]+\}/g, "•••")
+                  : opcao;
+                const displayLabel = adaptGender(displaySource.replace(/___\/4\+/g, "+/4+").replace(/___/g, "•••"), sexo);
                 const showDispositivoFull = isSelected && isDispositivoOption(opcao);
                 const showDispositivoDate = isSelected && !isDispositivoOption(opcao) && isDispositivoWithDate(opcao, campo);
+                const handleVariantChange = (v) => {
+                  const current = paramValues?.[opcao];
+                  if (current?.v !== v) {
+                    onParamChange?.(opcao, { v, p: {} });
+                  } else {
+                    onParamChange?.(opcao, { ...(current || {}), v });
+                  }
+                };
+                const handleNumChange = (val) => {
+                  if (isVariant) {
+                    const current = paramValues?.[opcao] || {};
+                    onParamChange?.(opcao, { ...current, p: val });
+                  } else {
+                    onParamChange?.(opcao, val);
+                  }
+                };
                 return (
                   <label
                     key={idx}
@@ -73,12 +99,21 @@ export default function CheckboxGroup({ titulo, opcoes, selected, onToggle, para
                         {displayLabel}
                       </span>
                     </div>
+                    {isSelected && isVariant && (
+                      <div className="ml-7">
+                        <VariantInput
+                          opcao={opcao}
+                          value={variantIdx}
+                          onChange={handleVariantChange}
+                        />
+                      </div>
+                    )}
                     {isSelected && hasParam && !isMedicacao && (
                       <div className="ml-7">
                         <ParameterInput
-                          opcao={opcao}
-                          value={paramValues?.[opcao]}
-                          onChange={(val) => onParamChange?.(opcao, val)}
+                          opcao={effectiveOption}
+                          value={numParamVal}
+                          onChange={handleNumChange}
                         />
                       </div>
                     )}

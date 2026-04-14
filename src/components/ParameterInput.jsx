@@ -34,6 +34,7 @@ const PARAM_DEFS = [
   { key: "mcg/kg/min", match: (s) => s.includes("mcg/kg/min"), min: 0.01, max: 2, step: 0.01, bigStep: null, unit: "mcg/kg/min", suffix: "" },
   { key: "cmH\u2082O", match: (s) => s.includes("cmH\u2082O") && !s.includes("PEEP"), min: 0, max: 30, step: 1, bigStep: null, unit: "cmH\u2082O", suffix: "" },
   { key: "ml/kg/h", match: (s) => s.includes("ml/kg/h"), min: 0, max: 10, step: 0.1, bigStep: null, unit: "ml/kg/h", suffix: "" },
+  { key: "mL", match: (s) => s.includes("mL"), min: 0, max: 1000, step: 10, bigStep: 100, unit: "mL", suffix: "" },
   { key: "dias", match: (s) => s.includes("dias"), min: 1, max: 30, step: 1, bigStep: null, unit: "dias", suffix: "" },
 ];
 
