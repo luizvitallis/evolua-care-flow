@@ -1,6 +1,7 @@
 const LOCAIS_AVP = [
   "MSE", "MSD", "MIE", "MID", "Dorso da mão E", "Dorso da mão D",
   "Fossa cubital E", "Fossa cubital D", "Antebraço E", "Antebraço D",
+  "VJEE", "VJED",
 ];
 
 const LOCAIS_CVC = [

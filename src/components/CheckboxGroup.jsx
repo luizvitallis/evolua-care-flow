@@ -4,6 +4,9 @@ import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import ParameterInput, { hasParameter } from "./ParameterInput";
 import LesaoPressaoInput from "./LesaoPressaoInput";
+import FeridaInput from "./FeridaInput";
+import QueimaduraInput from "./QueimaduraInput";
+import DrenoInput from "./DrenoInput";
 import DispositivoInput, { isDispositivoOption, isDispositivoWithDate, DispositivoDateInput } from "./DispositivoInput";
 import MedicacaoInput, { isMedicacaoSection, MedicacaoCustomArea } from "./MedicacaoInput";
 import VariantInput from "./VariantInput";
@@ -62,8 +65,9 @@ export default function CheckboxGroup({ titulo, opcoes, selected, onToggle, para
                   ? opcao.replace(/\{[^{}]+\}/g, "•••")
                   : opcao;
                 const displayLabel = adaptGender(displaySource.replace(/___\/4\+/g, "+/4+").replace(/___/g, "•••"), sexo);
+                const isDreno = opcao === "Dreno";
                 const showDispositivoFull = isSelected && isDispositivoOption(opcao);
-                const showDispositivoDate = isSelected && !isDispositivoOption(opcao) && isDispositivoWithDate(opcao, campo);
+                const showDispositivoDate = isSelected && !isDispositivoOption(opcao) && !isDreno && isDispositivoWithDate(opcao, campo);
                 const handleVariantChange = (v) => {
                   const current = paramValues?.[opcao];
                   if (current?.v !== v) {
@@ -120,6 +124,30 @@ export default function CheckboxGroup({ titulo, opcoes, selected, onToggle, para
                     {isSelected && opcao === "Presença de lesão por pressão" && (
                       <div className="ml-7">
                         <LesaoPressaoInput
+                          value={paramValues?.[opcao]}
+                          onChange={(val) => onParamChange?.(opcao, val)}
+                        />
+                      </div>
+                    )}
+                    {isSelected && opcao === "Ferida" && (
+                      <div className="ml-7">
+                        <FeridaInput
+                          value={paramValues?.[opcao]}
+                          onChange={(val) => onParamChange?.(opcao, val)}
+                        />
+                      </div>
+                    )}
+                    {isSelected && opcao === "Queimadura" && (
+                      <div className="ml-7">
+                        <QueimaduraInput
+                          value={paramValues?.[opcao]}
+                          onChange={(val) => onParamChange?.(opcao, val)}
+                        />
+                      </div>
+                    )}
+                    {isSelected && isDreno && (
+                      <div className="ml-7">
+                        <DrenoInput
                           value={paramValues?.[opcao]}
                           onChange={(val) => onParamChange?.(opcao, val)}
                         />

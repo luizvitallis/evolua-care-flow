@@ -3,18 +3,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { motion } from "framer-motion";
 import { User } from "lucide-react";
+import { calcDIH } from "@/lib/dateUtils";
 
 export default function PatientInfoForm({ patientInfo, onChange, ambiente }) {
   const sexo = patientInfo.sexo || "";
   const showAdmissao = ambiente === "ambiente_hospitalar";
-  const diasInternacao = useMemo(() => {
-    if (!patientInfo.dataAdmissao) return null;
-    const admDate = new Date(patientInfo.dataAdmissao);
-    const now = new Date();
-    const diffTime = now.getTime() - admDate.getTime();
-    const days = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
-    return days;
-  }, [patientInfo.dataAdmissao]);
+  const diasInternacao = useMemo(
+    () => calcDIH(patientInfo.dataAdmissao),
+    [patientInfo.dataAdmissao]
+  );
 
   const handleChange = (field, value) => {
     onChange({ ...patientInfo, [field]: value });

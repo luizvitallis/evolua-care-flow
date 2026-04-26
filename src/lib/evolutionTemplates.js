@@ -3,10 +3,14 @@ import medicoHospitalar from "./templates/medicoHospitalar";
 import enfermeiroAtencaoPrimaria from "./templates/enfermeiroAtencaoPrimaria";
 import enfermeiroHospitalar from "./templates/enfermeiroHospitalar";
 import { formatLesaoPressao } from "../components/LesaoPressaoInput";
+import { formatFerida } from "../components/FeridaInput";
+import { formatQueimadura } from "../components/QueimaduraInput";
+import { formatDreno } from "../components/DrenoInput";
 import { isDispositivoOption, formatDispositivo, isDispositivoWithDate } from "../components/DispositivoInput";
 import { formatMedicacoes } from "../components/MedicacaoInput";
 import { hasVariant, fillVariant } from "./variantUtils";
 import { adaptGender } from "./genderUtils";
+import { formatDateBR, calcDIH, nowBR } from "./dateUtils";
 
 function formatCruzVal(val) {
   const n = parseInt(val);
@@ -31,9 +35,7 @@ export function getTemplates(perfil, ambiente) {
 
 export function generateEvolutionText(perfil, template, selections, freeText, patientInfo, paramValues, vmData) {
   const lines = [];
-  const now = new Date();
-  const dateStr = now.toLocaleDateString("pt-BR");
-  const timeStr = now.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+  const { dateStr, timeStr } = nowBR();
 
   const perfilLabel = perfil === "medico" ? "EVOLUÇÃO MÉDICA" : "EVOLUÇÃO DE ENFERMAGEM";
   lines.push(`${perfilLabel} — ${dateStr} às ${timeStr}`);
@@ -43,11 +45,9 @@ export function generateEvolutionText(perfil, template, selections, freeText, pa
     if (patientInfo.idade) lines.push(`Idade: ${patientInfo.idade} anos`);
     if (patientInfo.diagnostico) lines.push(`Diagnóstico: ${patientInfo.diagnostico}`);
     if (patientInfo.dataAdmissao) {
-      lines.push(`Data de Admissão: ${new Date(patientInfo.dataAdmissao).toLocaleDateString("pt-BR")}`);
-      const admDate = new Date(patientInfo.dataAdmissao);
-      const diffTime = now.getTime() - admDate.getTime();
-      const diffDays = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
-      lines.push(`Dias de Internação: ${diffDays}º DIH`);
+      lines.push(`Data de Admissão: ${formatDateBR(patientInfo.dataAdmissao)}`);
+      const dih = calcDIH(patientInfo.dataAdmissao);
+      if (dih !== null) lines.push(`Dias de Internação: ${dih}º DIH`);
     }
   }
 
@@ -60,11 +60,11 @@ export function generateEvolutionText(perfil, template, selections, freeText, pa
       if (selected.length > 0 || medLines.length > 0) {
         lines.push(`${grupo.titulo.toUpperCase()}:`);
         const allMedLines = [];
-        // Format selected predefined meds (non-Antibiótico)
+        // Format selected predefined meds (non-Antibiótico, non-Hemotransfusão)
         for (const item of selected) {
-          if (item === "Antibiótico") continue;
+          if (item === "Antibiótico" || item === "Hemotransfusão") continue;
           const val = paramValues?.[item];
-          let text = item;
+          let text = hasVariant(item) ? fillVariant(item, val?.v ?? 0) : item;
           if (val?.via) text += ` — ${val.via}`;
           if (val?.vazao) text += `, ${val.vazao} ml/h`;
           allMedLines.push(text);
@@ -81,6 +81,15 @@ export function generateEvolutionText(perfil, template, selections, freeText, pa
             }
           } else {
             allMedLines.push("Antibiótico");
+          }
+        }
+        // Hemotransfusão
+        if (selected.includes("Hemotransfusão")) {
+          const htVal = paramValues?.["Hemotransfusão"];
+          if (htVal?.components?.length > 0) {
+            allMedLines.push(`Hemotransfusão: ${htVal.components.join(", ")}`);
+          } else {
+            allMedLines.push("Hemotransfusão");
           }
         }
         // Custom meds
@@ -103,6 +112,15 @@ export function generateEvolutionText(perfil, template, selections, freeText, pa
       const filledItems = selected.map((item) => {
         if (item === "Presença de lesão por pressão" && paramValues && paramValues[item]) {
           return formatLesaoPressao(paramValues[item]);
+        }
+        if (item === "Ferida" && paramValues && paramValues[item]) {
+          return formatFerida(paramValues[item]);
+        }
+        if (item === "Queimadura" && paramValues && paramValues[item]) {
+          return formatQueimadura(paramValues[item]);
+        }
+        if (item === "Dreno" && paramValues && paramValues[item]) {
+          return formatDreno(paramValues[item]);
         }
         if (isDispositivoOption(item) && paramValues && paramValues[item]) {
           return formatDispositivo(item, paramValues[item]);

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Plus, X } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { hasVariant, fillVariant } from "../lib/variantUtils";
 
 const ANTIBIOTICOS = [
   "Amicacina",
@@ -35,11 +36,19 @@ const MEDICACAO_OPTIONS = [
   "Dopamina",
   "Dormonid",
   "Fentanil",
+  "Hemotransfusão",
   "Ketamina",
   "Morfina",
-  "Noradrenalina",
+  "Noradrenalina {simples|concentrada}",
   "Precedex",
   "Propofol",
+  "Vasopressina",
+];
+
+const HEMOCOMPONENTES = [
+  "Concentrado de hemácias",
+  "Concentrado de plaquetas",
+  "Plasma",
 ];
 
 export function isMedicacaoSection(campo) {
@@ -50,10 +59,10 @@ export function formatMedicacoes(paramValues) {
   const lines = [];
 
   for (const med of MEDICACAO_OPTIONS) {
-    if (med === "Antibiótico") continue;
+    if (med === "Antibiótico" || med === "Hemotransfusão") continue;
     const val = paramValues?.[med];
     if (!val) continue;
-    let text = med;
+    let text = hasVariant(med) ? fillVariant(med, val.v ?? 0) : med;
     if (val.via) text += ` — ${val.via}`;
     if (val.vazao) text += `, ${val.vazao} ml/h`;
     lines.push(text);
@@ -68,6 +77,12 @@ export function formatMedicacoes(paramValues) {
       if (item.vazao) text += `, ${item.vazao} ml/h`;
       lines.push(text);
     }
+  }
+
+  // Hemotransfusão
+  const htVal = paramValues?.["Hemotransfusão"];
+  if (htVal?.components?.length > 0) {
+    lines.push(`Hemotransfusão: ${htVal.components.join(", ")}`);
   }
 
   // Custom meds
@@ -200,6 +215,39 @@ function AntibioticoSelector({ value, onChange }) {
   );
 }
 
+function HemotransfusaoSelector({ value, onChange }) {
+  const components = value?.components || [];
+
+  const toggleComponent = (nome) => {
+    const exists = components.includes(nome);
+    const updated = exists ? components.filter((c) => c !== nome) : [...components, nome];
+    onChange({ ...value, components: updated });
+  };
+
+  return (
+    <div className="space-y-1.5" onClick={(e) => e.stopPropagation()}>
+      <span className="text-xs font-medium text-muted-foreground">Componentes</span>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
+        {HEMOCOMPONENTES.map((c) => {
+          const selected = components.includes(c);
+          return (
+            <label key={c} className="flex items-center gap-2 px-1.5 py-1 rounded cursor-pointer hover:bg-muted/40 text-xs">
+              <Checkbox
+                checked={selected}
+                onCheckedChange={() => toggleComponent(c)}
+                className="shrink-0"
+              />
+              <span className={selected ? "text-foreground font-medium" : "text-muted-foreground"}>
+                {c}
+              </span>
+            </label>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function CustomMedicacoes({ value, onChange }) {
   const items = value || [];
   const [newName, setNewName] = useState("");
@@ -266,6 +314,15 @@ export default function MedicacaoInput({ opcao, value, onChange, paramValues, on
       <AntibioticoSelector
         value={paramValues?.["Antibiótico"]}
         onChange={(val) => onParamChange?.("Antibiótico", val)}
+      />
+    );
+  }
+
+  if (opcao === "Hemotransfusão") {
+    return (
+      <HemotransfusaoSelector
+        value={paramValues?.["Hemotransfusão"]}
+        onChange={(val) => onParamChange?.("Hemotransfusão", val)}
       />
     );
   }
